@@ -60,7 +60,7 @@ PHP_FUNCTION(queue_new)
 
     rsid = ZEND_REGISTER_RESOURCE(res, ls, le_queue);
 
-    RETURN_RESOURCE(rsrc_id);
+    RETURN_RESOURCE(rsid);
 }
 
 PHP_FUNCTION(queue_push)
@@ -74,10 +74,10 @@ PHP_FUNCTION(queue_push)
         RETURN_FALSE;
     }
 
-    ZEND_FETCH_RESOURCE(ls, list_t, &res, -1, RESOURCE_TYPE_NAME, le_queue);
+    ZEND_FETCH_RESOURCE(ls, list_t *, &res, -1, RESOURCE_TYPE_NAME, le_queue);
 
     if (list_push(ls, (void *)data) == 0) {
-        zval_add_ref(data); /* refcount++ */
+        zval_add_ref(&data); /* refcount++ */
         RETURN_TRUE;
     }
 
@@ -89,19 +89,36 @@ PHP_FUNCTION(queue_pop)
     zval *res, *data;
     list_t *ls;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &res, &data)
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &res)
         == FAILURE)
     {
         RETURN_FALSE;
     }
 
-    ZEND_FETCH_RESOURCE(ls, list_t, &res, -1, RESOURCE_TYPE_NAME, le_queue);
+    ZEND_FETCH_RESOURCE(ls, list_t *, &res, -1, RESOURCE_TYPE_NAME, le_queue);
 
     if (list_pop(ls, (void **)&data) == 0) {
         RETURN_ZVAL(data, 1, 1);
     }
 
     RETURN_FALSE;
+}
+
+
+PHP_FUNCTION(queue_count)
+{
+    zval *res;
+    list_t *ls;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &res)
+        == FAILURE)
+    {
+        RETURN_FALSE;
+    }
+
+    ZEND_FETCH_RESOURCE(ls, list_t *, &res, -1, RESOURCE_TYPE_NAME, le_queue);
+
+    RETURN_LONG(list_count(ls));
 }
 
 
@@ -119,7 +136,7 @@ static void php_queue_init_globals(zend_queue_globals *queue_globals)
 /* {{{ PHP_MINIT_FUNCTION
  */
 
-void list_destructor(zend_rsrc_entry *rsrc TSRMLS_DC)
+void list_destructor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
     list_t *ls = (list_t *)rsrc->ptr;
     list_free(ls);
@@ -185,9 +202,10 @@ PHP_MINFO_FUNCTION(queue)
  * Every user visible function must have an entry in queue_functions[].
  */
 const zend_function_entry queue_functions[] = {
-    PHP_FE(queue_new,  NULL)
-    PHP_FE(queue_push, NULL)
-    PHP_FE(queue_pop,  NULL)
+    PHP_FE(queue_new,   NULL)
+    PHP_FE(queue_push,  NULL)
+    PHP_FE(queue_pop,   NULL)
+    PHP_FE(queue_count, NULL)
 	PHP_FE_END	/* Must be the last line in queue_functions[] */
 };
 /* }}} */
