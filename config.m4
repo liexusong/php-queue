@@ -13,9 +13,9 @@ dnl [  --with-queue             Include queue support])
 
 dnl Otherwise use enable:
 
-dnl PHP_ARG_ENABLE(queue, whether to enable queue support,
+PHP_ARG_ENABLE(queue, whether to enable queue support,
 dnl Make sure that the comment is aligned:
-dnl [  --enable-queue           Enable queue support])
+[  --enable-queue           Enable queue support])
 
 if test "$PHP_QUEUE" != "no"; then
   dnl Write more examples of tests here...
@@ -45,7 +45,7 @@ if test "$PHP_QUEUE" != "no"; then
 
   dnl # --with-queue -> check for lib and symbol presence
   dnl LIBNAME=queue # you may want to change this
-  dnl LIBSYMBOL=queue # you most likely want to change this 
+  dnl LIBSYMBOL=queue # you most likely want to change this
 
   dnl PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   dnl [
