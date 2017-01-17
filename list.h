@@ -17,5 +17,6 @@ list_t *list_create();
 int list_free(list_t *ls);
 int list_push(list_t *ls, void *data);
 int list_pop(list_t *ls, void **data);
+int list_count(list_t *ls);
 
 #endif

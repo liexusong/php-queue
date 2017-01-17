@@ -80,3 +80,8 @@ int list_pop(list_t *ls, void **data)
 
     return 0;
 }
+
+int list_count(list_t *ls)
+{
+    return ls->count;
+}
